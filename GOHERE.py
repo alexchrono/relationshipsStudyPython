@@ -16,7 +16,9 @@ STEP 0:  if you see a venv file to the side, delete it by entering
 rm -r venv in the terminal. then pipenv install -r requirements.txt
 
 STEP 1:  go to app/models.py Make a many to many relationship between students and courses.  you will need to
-make an association table. then uncomment the first test in GOHERE.PY.  run python GOHERE.PY to test
+make an association table.
+then, init a database.  make a migration.  upgrade.  and run python seeder.py
+then uncomment the first test in GOHERE.PY.  run python GOHERE.PY to test
 '''
 # ************ Test #1: many-to-many relationship between students and courses.********************
 # This function will retrieve two students and all the courses each student is enrolled
