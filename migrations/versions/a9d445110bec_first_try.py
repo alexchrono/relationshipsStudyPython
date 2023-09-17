@@ -1,8 +1,8 @@
-"""last try
+"""first try
 
-Revision ID: 1079046793ce
+Revision ID: a9d445110bec
 Revises: 
-Create Date: 2023-09-16 22:58:08.786194
+Create Date: 2023-09-17 10:54:04.423343
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1079046793ce'
+revision = 'a9d445110bec'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,7 +31,7 @@ def upgrade():
     op.create_table('courses',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=100), nullable=False),
-    sa.Column('teacher_id', sa.Integer(), nullable=True),
+    sa.Column('teacher_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['teacher_id'], ['teachers.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -43,12 +43,11 @@ def upgrade():
     sa.PrimaryKeyConstraint('teacher_id', 'student_id')
     )
     op.create_table('enrollments',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('student_id', sa.Integer(), nullable=True),
-    sa.Column('course_id', sa.Integer(), nullable=True),
+    sa.Column('student_id', sa.Integer(), nullable=False),
+    sa.Column('course_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['course_id'], ['courses.id'], ),
     sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('student_id', 'course_id')
     )
     # ### end Alembic commands ###
 

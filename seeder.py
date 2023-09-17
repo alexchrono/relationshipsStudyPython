@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from app.factory import create_app, db
-from app.models import Student, Course, Enrollment, Teacher
+from app.models import Student, Course, Teacher
 from faker import Faker
 import random
 
@@ -52,22 +52,28 @@ def seed_database():
         db.session.add_all(teachers)
         db.session.commit()
 
-        # Create university courses with random titles and assign a teacher to each course
-        for course_title in sample_courses:
-            teacher = random.choice(teachers)
-            course = Course(title=course_title, teacher=teacher)
+        # Initially assign one course to each teacher
+        for i in range(len(teachers)):
+            random_number = random.randint(100, 999)
+            full_course_title = f"{sample_courses[i]} {random_number}"
+            course = Course(title=full_course_title, teacher=teachers[i])
             db.session.add(course)
+        db.session.commit()
 
-        # Commit here to ensure that courses are in the database before enrolling students
+        # Assign the remaining courses to random teachers
+        for course_title in sample_courses[len(teachers):]:
+            random_number = random.randint(100, 999)
+            full_course_title = f"{course_title} {random_number}"
+            teacher = random.choice(teachers)
+            course = Course(title=full_course_title, teacher=teacher)
+            db.session.add(course)
         db.session.commit()
 
         # Enroll each student in at least one random course
         for student in students:
             num_enrollments = random.randint(1, 2)  # Enroll each student in 1 or 2 courses
             random_courses = random.sample(Course.query.all(), num_enrollments)
-            for course in random_courses:
-                enrollment = Enrollment(student=student, course=course)
-                db.session.add(enrollment)
+            student.courses.extend(random_courses)
 
         db.session.commit()
 
