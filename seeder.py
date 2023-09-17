@@ -19,27 +19,27 @@ def seed_database():
         # Create a Faker instance for generating names
         fake = Faker()
 
-        # Define a list of common university courses as strings
+        # Define a list of common university courses as strings with added random integers
         sample_courses = [
-            "Philosophy",
-            "Computer Science",
-            "Psychology",
-            "Biology",
-            "History",
-            "Mathematics",
-            "Economics",
-            "Physics",
-            "Chemistry",
-            "English Literature",
-            "Political Science",
-            "Sociology",
-            "Art History",
-            "Engineering",
-            "Geology",
-            "Music",
-            "Foreign Languages",
-            "Theater",
-            "Education",
+            "Philosophy 109",
+            "Computer Science 253",
+            "Psychology 475",
+            "Biology 301",
+            "History 214",
+            "Mathematics 102",
+            "Economics 399",
+            "Physics 202",
+            "Chemistry 508",
+            "English Literature 311",
+            "Political Science 220",
+            "Sociology 150",
+            "Art History 425",
+            "Engineering 777",
+            "Geology 204",
+            "Music 632",
+            "Foreign Languages 412",
+            "Theater 115",
+            "Education 198",
         ]
 
         # Create students with actual names
@@ -47,31 +47,33 @@ def seed_database():
         db.session.add_all(students)
         db.session.commit()
 
-        # Create teachers with actual names
-        teachers = [Teacher(name=fake.name()) for _ in range(10)]
+        # Create teachers with actual names (limit to 5 teachers)
+        teachers = [Teacher(name=fake.name()) for _ in range(5)]
         db.session.add_all(teachers)
         db.session.commit()
 
-        # Initially assign one course to each teacher
+        # Initially assign at least 2 courses to each teacher
         for i in range(len(teachers)):
-            random_number = random.randint(100, 999)
-            full_course_title = f"{sample_courses[i]} {random_number}"
-            course = Course(title=full_course_title, teacher=teachers[i])
-            db.session.add(course)
+            full_course_title = sample_courses[i]
+            course1 = Course(title=f"{full_course_title} (1)", teacher=teachers[i])
+            course2 = Course(title=f"{full_course_title} (2)", teacher=teachers[i])
+            db.session.add_all([course1, course2])
         db.session.commit()
 
         # Assign the remaining courses to random teachers
-        for course_title in sample_courses[len(teachers):]:
-            random_number = random.randint(100, 999)
-            full_course_title = f"{course_title} {random_number}"
+        remaining_courses = [
+            course_title
+            for course_title in sample_courses[len(teachers) * 2 :]  # At least 2 courses per teacher
+        ]
+        for course_title in remaining_courses:
             teacher = random.choice(teachers)
-            course = Course(title=full_course_title, teacher=teacher)
+            course = Course(title=course_title, teacher=teacher)
             db.session.add(course)
         db.session.commit()
 
-        # Enroll each student in at least one random course
+        # Enroll each student in at least 4 random courses
         for student in students:
-            num_enrollments = random.randint(1, 2)  # Enroll each student in 1 or 2 courses
+            num_enrollments = random.randint(4, 5)  # Enroll each student in 4 or 5 courses
             random_courses = random.sample(Course.query.all(), num_enrollments)
             student.courses.extend(random_courses)
 
