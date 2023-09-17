@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
 from app.factory import create_app, db
 from app.models import Student, Course, Teacher
 from faker import Faker
 import random
-
-# Load environment variables from .env
-load_dotenv()
 
 # Create a Flask app context
 app = create_app()
@@ -58,6 +59,7 @@ def seed_database():
             course1 = Course(title=f"{full_course_title} (1)", teacher=teachers[i])
             course2 = Course(title=f"{full_course_title} (2)", teacher=teachers[i])
             db.session.add_all([course1, course2])
+
         db.session.commit()
 
         # Assign the remaining courses to random teachers
@@ -69,13 +71,18 @@ def seed_database():
             teacher = random.choice(teachers)
             course = Course(title=course_title, teacher=teacher)
             db.session.add(course)
+
         db.session.commit()
 
-        # Enroll each student in at least 4 random courses
+        # Enroll each student in a random set of non-duplicate courses
         for student in students:
             num_enrollments = random.randint(4, 5)  # Enroll each student in 4 or 5 courses
             random_courses = random.sample(Course.query.all(), num_enrollments)
             student.courses.extend(random_courses)
+
+            # Create associations in teacher_student_association table
+            for teacher in teachers:
+                teacher.students.append(student)
 
         db.session.commit()
 

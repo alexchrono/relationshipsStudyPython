@@ -6,6 +6,8 @@ from flask import Flask
 
 app = create_app()
 
+Migrate=(app,db)
+
 
 # from . import selfmade_queries  # Import your routes (selfmade_queries) here
 
